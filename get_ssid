@@ -1,0 +1,21 @@
+#!/usr/bin/env fish
+set wifi_status (ifconfig wlan0 | grep 'status' | sed 's/.*status: //')
+
+set ssid_has_quotes (ifconfig wlan0 | grep '"')
+
+if test -n "$ssid_has_quotes"
+        set ssid (ifconfig wlan0 | grep ssid | sed 's/.*"\(.*\)".*/\1/')
+else
+        set ssid (ifconfig wlan0 | grep ssid | cut -d' ' -f 2)
+end
+
+
+# We are not connected to wifi so display
+# no status
+if test "$wifi_status" = "no carrier"
+        echo "Not Connected"
+else if test -z "$wifi_status"
+        echo "Not Connected"
+else
+        echo "$ssid"
+end

@@ -1,0 +1,14 @@
+#!/usr/bin/env fish
+
+## Spawn a dialog box and ask the user whether
+## they really want to lock the screen or not
+
+set date_str (printf "[%s]" (date -u) )
+Xdialog --center --yesno "Do you want to lock the screen?" 0 0
+
+if test "$status" = "0"
+        echo $date_str "Locking!" 1>&2
+        slock
+else
+        echo $date_str "Did not lock" 1>&2
+end

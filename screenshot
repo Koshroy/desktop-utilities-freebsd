@@ -1,0 +1,10 @@
+#!/usr/bin/env fish
+
+set -l screenshot_dir "~/img/screenshots"
+set -l remote_screenshot_dir "~/media/screenshots"
+set -l remote_screenshot_uri "http://www.meff.me/media/screenshots"
+
+set -l screenshot_cmd (printf 'mv $f %s/; scp %s/$f torifuda@www.meff.me:%s/; echo -n %s/$f | xclip -selection clipboard' $screenshot_dir $screenshot_dir $remote_screenshot_dir $remote_screenshot_uri)
+
+#echo $screenshot_cmd
+sleep 0.2; scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e $screenshot_cmd $argv

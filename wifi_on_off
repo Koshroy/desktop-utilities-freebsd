@@ -1,0 +1,13 @@
+#!/usr/bin/env fish
+
+if test -z "$argv"
+        echo "No wifi status specified"
+        echo "Usage: wifi_on_off [on|off]"
+        exit 1
+end
+
+if test "$argv" = "on"
+        doas ifconfig wlan0 up
+else if test "$argv" = "off"
+        doas ifconfig wlan0 down
+end

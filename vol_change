@@ -1,0 +1,29 @@
+#!/usr/bin/env fish
+
+getopts $argv | while read -l key value
+        switch $key
+                case "s"
+                        set step_size $value
+                case "step"
+                        set step_size $value
+                case _
+                        set step_direction $value
+        end
+end
+
+if test -z "$step_size"
+        set step_size 1
+end
+
+if test -z "$step_direction"
+        set step_direction up
+end
+
+if test "$step_direction" = "up"
+        aumix -v "+$step_size"
+else if test "$step_direction" = "down"
+        aumix -v "-$step_size"
+else
+        echo "Error: step_direction must be one of 'up' or 'down'"
+        exit 1
+end

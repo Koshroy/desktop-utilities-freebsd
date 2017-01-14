@@ -1,0 +1,18 @@
+#!/usr/bin/env fish
+
+getopts $argv | while read -l key value
+        if test "$key" = "_"
+                set edit_fname $value
+        else
+                set new_argv "$key $value" $new_argv
+        end
+end
+
+
+set -l temp_name (mktemp editing.XXXX)
+doas cat $edit_fname > $temp_name
+set -l argv $temp_name
+eval $cmd
+if test "$status" -eq 0
+        doas cp $temp_name $edit_fname
+end
