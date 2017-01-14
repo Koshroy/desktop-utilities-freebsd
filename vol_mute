@@ -1,0 +1,18 @@
+#!/usr/bin/env fish
+
+set temp_dir ~/tmp
+
+getopts $argv | while read -l key value
+        switch $key
+                case "n"
+                        set no_save "true"
+                case "no-save"
+                        set no_save "true"
+        end
+end
+
+if test -z "$no_save"
+        aumix -q > $temp_dir/aumixrc
+end
+
+aumix -v 0

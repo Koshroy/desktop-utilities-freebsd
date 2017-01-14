@@ -1,0 +1,19 @@
+#!/usr/bin/env fish
+
+set temp_dir ~/tmp
+
+getopts $argv | while read -l key value
+        switch $key
+                case "n"
+                case "no-load"
+                        set no_load "true"
+        end
+end
+
+if test -n "$no_load"
+        set rc_file $HOME/.aumixrc
+else
+        set rc_file $temp_dir/aumixrc
+end
+
+aumix -f $rc_file -L > /dev/null
