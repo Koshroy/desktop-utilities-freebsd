@@ -4,6 +4,14 @@
 ## they really want to lock the screen or not
 
 set date_str (printf "[%s]" (date -u) )
+
+set pid_file "$HOME/.lock_dialog.pid"
+if test -e "$pid_file"
+        echo $date_str "Lock dialog is already running!" 1>&2
+        exit 1
+end
+echo %self > "$pid_file"
+
 Xdialog --center --yesno "Do you want to lock the screen?" 0 0
 
 if test "$status" = "0"
@@ -12,3 +20,5 @@ if test "$status" = "0"
 else
         echo $date_str "Did not lock" 1>&2
 end
+
+rm "$pid_file"

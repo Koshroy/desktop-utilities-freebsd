@@ -4,6 +4,14 @@
 ## whether they really want to suspend or not
 
 set date_str (printf "[%s]" (date -u) )
+
+set pid_file "$HOME/.suspend_dialog.pid"
+if test -e "$pid_file"
+        echo $date_str "Suspend dialog is already running!" 1>&2
+        exit 1
+end
+echo %self > "$pid_file"
+
 Xdialog --center --wmclass 'Xdialog' --yesno "Are you sure you want to suspend?" 0 0
 
 if test "$status" = "0"
@@ -12,3 +20,5 @@ if test "$status" = "0"
 else
         echo $date_str "Did not suspend" 1>&2
 end
+
+rm "$pid_file"
