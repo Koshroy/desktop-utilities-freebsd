@@ -1,10 +1,33 @@
 #!/usr/bin/env fish
 
-set -l screenshot_dir "~/img/screenshots"
+set -l screenshot_dir (realpath "$HOME/img/screenshots")
 set -l remote_screenshot_dir "~/media/screenshots"
 set -l remote_screenshot_uri "http://www.meff.me/media/screenshots"
 
-set -l screenshot_cmd (printf 'mv $f %s/; scp %s/$f torifuda@www.meff.me:%s/; echo -n %s/$f | xclip -selection clipboard' $screenshot_dir $screenshot_dir $remote_screenshot_dir $remote_screenshot_uri)
+# Move the screenshot after it is taken
+set -l screenshot_cmd (printf 'mv $f %s/' $screenshot_dir)
 
-#echo $screenshot_cmd
-sleep 0.2; scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e $screenshot_cmd $argv
+# Actually grab the screenshot. We need to pass $argv
+# so that we can differentiate between taking a selection
+# and taking the whole screen
+
+# Sleep so that the keyboard can become available
+# This is a stupid hack
+sleep 0.2
+scrot '%Y-%m-%d-%H-%M-%S_$wx$h.png' -e $screenshot_cmd $argv
+set -l latest_shot (find $screenshot_dir -type f -depth 1 -name '*.png' | xargs stat -f '%c,%N' | sort -rn | head -n 1 | cut -d',' -f 2)
+
+# If we could not find the latest shot filename
+# then we should not proceed
+if test -z "$latest_shot"
+        echo "Could not the latest screenshot. Quitting."
+        exit 1
+end
+
+
+scp $latest_shot "torifuda@www.meff.me:$remote_screenshot_dir/" 1>&2
+if test "$status" != "0"
+        echo "Error uploading screenshot" 1>&2
+        exit 1
+end
+printf "$remote_screenshot_uri/%s" (basename $latest_shot) | xclip -selection clipboard 
