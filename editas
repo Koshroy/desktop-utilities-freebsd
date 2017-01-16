@@ -1,5 +1,6 @@
 #!/usr/bin/env fish
 
+# Read argv
 getopts $argv | while read -l key value
         if test "$key" = "_"
                 set edit_fname $value
@@ -9,10 +10,20 @@ getopts $argv | while read -l key value
 end
 
 
+# Create a temp file, copy the file we want to edit
+# to the temp file, edit the temp file
 set -l temp_name (mktemp editing.XXXX)
 doas cat $edit_fname > $temp_name
 set -l argv $temp_name
-eval $cmd
+eval "$EDITOR $temp_name"
+
+# Make sure nothing went wrong with the editing
+# and then check if the file was actually edited
 if test "$status" -eq 0
-        doas cp $temp_name $edit_fname
+        diff $temp_name $edit_fname > /dev/null
+        if test "$status" -eq 0
+                echo "File was not changed!" >&2
+        else
+                doas cp $temp_name $edit_fname
+        end
 end
