@@ -14,7 +14,7 @@ echo %self > "$pid_file"
 
 Xdialog --center --yesno "Do you want to lock the screen?" 0 0
 
-if test "$status" = "0"
+if test "$status" -eq 0
         echo $date_str "Locking!" 1>&2
         slock
 else

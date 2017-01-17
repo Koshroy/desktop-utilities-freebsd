@@ -14,8 +14,14 @@ end
 # to the temp file, edit the temp file
 set -l temp_name (mktemp editing.XXXX)
 doas cat $edit_fname > $temp_name
-set -l argv $temp_name
-eval "$EDITOR $temp_name"
+
+# Use the default editor if available
+if test -z "$EDITOR"
+        echo "No editor found. Using vi." >&2
+        vi $temp_name
+else
+        eval "$EDITOR $temp_name"
+end
 
 # Make sure nothing went wrong with the editing
 # and then check if the file was actually edited
@@ -25,5 +31,6 @@ if test "$status" -eq 0
                 echo "File was not changed!" >&2
         else
                 doas cp $temp_name $edit_fname
+                rm $temp_name
         end
 end

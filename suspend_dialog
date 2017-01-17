@@ -14,7 +14,7 @@ echo %self > "$pid_file"
 
 Xdialog --center --wmclass 'Xdialog' --yesno "Are you sure you want to suspend?" 0 0
 
-if test "$status" = "0"
+if test "$status" -eq 0
         echo $date_str "Suspending!" 1>&2
         doas acpiconf -s 3
 else
